@@ -5,36 +5,36 @@ package com.wind.scaffold
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Chip
-import androidx.compose.material.ChipDefaults
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.primarySurface
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wind.scaffold.ui.theme.ScaffoldTheme
@@ -77,161 +77,126 @@ fun MyScreen() {
         }
     ) { innerPadding -> // specify the body content
         // create a scrolling list of items
-        Box(
+        LazyColumn(
             Modifier.padding(innerPadding)
         ) {
-            BasicChip()
+            items(20) { index ->
+                ListItem(text = {
+                    Text("Item $index")
+                })
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BasicChip() {
-    Chip(onClick = {}, content = { Text("Basic Chip") })
-}
+fun MyPage() {
+    val scaffoldState = rememberScaffoldState()
 
-@Composable
-fun ClickableChip() {
-    var isSelected by remember { mutableStateOf(false) }
-    val backgroundColor = if (isSelected) Color.Blue else Color.Gray
-
-    Chip(
-        onClick = { isSelected = !isSelected },
-        colors = ChipDefaults.chipColors(
-            backgroundColor = backgroundColor,
-            contentColor = Color.White
-        )
-    ) {
-        Text("Clickable Chip")
-    }
-}
-
-@Composable
-fun RoundedChip() {
-    Chip(
-        onClick = {},
-        modifier = Modifier.padding(8.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = ChipDefaults.chipColors(
-            backgroundColor = Color.Gray,
-            contentColor = Color.White
-        )
-    ) {
-        Text("Rounded Chip")
-    }
-}
-
-@Composable
-fun OutlinedChip() {
-    Chip(
-        onClick = {},
-        modifier = Modifier.padding(8.dp),
-        shape = MaterialTheme.shapes.small,
-        border = BorderStroke(1.dp, Color.Gray),
-        colors = ChipDefaults.chipColors(
-            backgroundColor = Color.Transparent,
-            contentColor = Color.Gray
-        )
-    ) {
-        Text("Outlined Chip")
-    }
-}
-
-@Composable
-fun IconChip() {
-    Chip(
-        onClick = {},
-        modifier = Modifier.padding(8.dp),
-        colors = ChipDefaults.chipColors(
-            backgroundColor = Color.Green,
-            contentColor = Color.White
-        ),
-        leadingIcon = {
-            Icon(Icons.Filled.Check, contentDescription = null, tint = Color.White)
-        }
-    ) {
-        Text("Icon Chip")
-    }
-}
-
-@Composable
-fun CustomChip() {
-    val colors = ChipDefaults.chipColors(
-        backgroundColor = Color.Red,
-        contentColor = Color.White,
-        disabledContentColor = Color.Gray
-    )
-
-    Chip(
-        onClick = { /* Do something */ },
-        modifier = Modifier.padding(8.dp),
-        enabled = false,
-        interactionSource = remember { MutableInteractionSource() },
-        shape = CutCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color.Black),
-        colors = colors,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Filled.Favorite,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = Color.Yellow
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = { Text("My App") },
+                actions = {
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(Icons.Filled.Favorite, contentDescription = null)
+                    }
+                }
             )
+        },
+        bottomBar = {
+            BottomNavigation(
+                backgroundColor = MaterialTheme.colors.primarySurface,
+                contentColor = MaterialTheme.colors.onPrimary
+            ) {
+                BottomNavigationItem(
+                    selected = true,
+                    icon = { Icon(Icons.Filled.Home, contentDescription = null) },
+                    label = { Text("Home") },
+                    onClick = { /* do something */ }
+                )
+                BottomNavigationItem(
+                    selected = false,
+                    icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                    label = { Text("Settings") },
+                    onClick = { /* do something */ }
+                )
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* do something */ }
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = null)
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
+        isFloatingActionButtonDocked = true,
+        drawerContent = {
+            Column(
+                Modifier.fillMaxSize()
+            ) {
+                Text(
+                    text = "Drawer Header",
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Divider()
+                Text(
+                    text = "Item 1",
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    text = "Item 2",
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        },
+        content = { innerPadding ->
+            LazyColumn(
+                Modifier.padding(innerPadding)
+            ) {
+                items(20) { index ->
+                    ListItem(text = {
+                        Text("Item $index")
+                    })
+                }
+            }
+        },
+        backgroundColor = MaterialTheme.colors.surface,
+        contentColor = MaterialTheme.colors.onSurface,
+        snackbarHost = {
+            SnackbarHost(it) { data ->
+                Snackbar(
+                    content = { Text(data.message) },
+                    action = {
+                        TextButton(onClick = { data.performAction() }) {
+                            Text(data.actionLabel ?: "Dismiss")
+                        }
+                    }
+                )
+            }
         }
-    ) {
-        Text(
-            text = "Custom Chip",
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
-    }
+    )
 }
-
 
 @Preview(showBackground = true)
 @Composable
-fun BasicChipPreview() {
+fun SimpleScaffoldPreview() {
     ScaffoldTheme {
-        BasicChip()
+        MyScreen()
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ClickableChipPreview() {
+fun AdvancedScaffoldPreview() {
     ScaffoldTheme {
-        ClickableChip()
+        MyPage()
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RoundedChipPreview() {
-    ScaffoldTheme {
-        RoundedChip()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun OutlinedChipPreview() {
-    ScaffoldTheme {
-        OutlinedChip()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun IconChipPreview() {
-    ScaffoldTheme {
-        IconChip()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CustomChipPreview() {
-    ScaffoldTheme {
-        CustomChip()
-    }
-}
