@@ -1,10 +1,15 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
 package com.wind.scaffold.ui
+
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,11 +17,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -59,10 +71,20 @@ fun HorizontalMovieList(movieTitles: List<String>) {
 }
 
 data class Movie(val title: String, val description: String)
+
 val movies = listOf(
-    Movie("Inception", "A thief who steals corporate secrets through the use of dream-sharing technology."),
-    Movie("The Dark Knight", "Batman sets out to dismantle the remaining criminal organizations that plague the streets."),
-    Movie("Interstellar", "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.")
+    Movie(
+        "Inception",
+        "A thief who steals corporate secrets through the use of dream-sharing technology."
+    ),
+    Movie(
+        "The Dark Knight",
+        "Batman sets out to dismantle the remaining criminal organizations that plague the streets."
+    ),
+    Movie(
+        "Interstellar",
+        "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival."
+    )
 )
 
 @Composable
@@ -141,14 +163,38 @@ fun ItemIndexedMovieItem(index: Int, movie: Movie) {
 }
 
 val movies2 = listOf(
-    Movie("The Godfather", "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son."),
-    Movie("The Shawshank Redemption", "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency."),
-    Movie("The Dark Knight", "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice."),
-    Movie("The Godfather: Part II", "The early life and career of Vito Corleone in 1920s New York City is portrayed, while his son, Michael, expands and tightens his grip on the family crime syndicate."),
-    Movie("12 Angry Men", "A jury holdout attempts to prevent a miscarriage of justice by forcing his colleagues to reconsider the evidence."),
-    Movie("Schindler's List", "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis."),
-    Movie("The Lord of the Rings: The Return of the King", "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring."),
-    Movie("Pulp Fiction", "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.")
+    Movie(
+        "The Godfather",
+        "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son."
+    ),
+    Movie(
+        "The Shawshank Redemption",
+        "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency."
+    ),
+    Movie(
+        "The Dark Knight",
+        "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice."
+    ),
+    Movie(
+        "The Godfather: Part II",
+        "The early life and career of Vito Corleone in 1920s New York City is portrayed, while his son, Michael, expands and tightens his grip on the family crime syndicate."
+    ),
+    Movie(
+        "12 Angry Men",
+        "A jury holdout attempts to prevent a miscarriage of justice by forcing his colleagues to reconsider the evidence."
+    ),
+    Movie(
+        "Schindler's List",
+        "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis."
+    ),
+    Movie(
+        "The Lord of the Rings: The Return of the King",
+        "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring."
+    ),
+    Movie(
+        "Pulp Fiction",
+        "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption."
+    )
 )
 
 val groupedMovies = movies2.groupBy { it.title.first().toUpperCase() }
@@ -179,6 +225,75 @@ fun GroupedMovieList(movies2: List<Movie>) {
             }
         }
     }
+}
+data class Message(val sender: String, val message: String, val time: String)
+
+val chatData = listOf(
+    Message("Alice", "Hi Bob, how are you?", "10:05 AM"),
+    Message("Bob", "I'm good, thanks for asking. How about you?", "10:08 AM"),
+    Message("Alice", "I'm doing well too. Did you finish that project we talked about?", "10:10 AM"),
+    Message("Bob", "Yes, I did! It took longer than expected, but it turned out great.", "10:15 AM"),
+    Message("Alice", "Awesome! Can't wait to see it.", "10:17 AM"),
+    Message("Bob", "Sure thing, I'll send it to you once I get back to my desk.", "10:20 AM")
+)
+
+@Composable
+fun ChatScreen(messages: List<Message>) {
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        items(messages) { message ->
+            ChatBubble(
+                message = message,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun ChatBubble(message: Message, modifier: Modifier = Modifier) {
+    Row(modifier) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(text = message.sender, fontWeight = FontWeight.Bold)
+            Text(text = message.message)
+        }
+        Text(text = message.time, modifier = Modifier.padding(start = 8.dp))
+    }
+}
+
+@Composable
+fun ChatPagingList(movies: List<Message>) {
+
+    val listState = rememberLazyListState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex >= movies.lastIndex - 5
+        }
+    }
+
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        items(movies) { message ->
+            ChatBubble(
+                message = message,
+                modifier = Modifier.fillMaxWidth()
+            )
+            if (shouldLoadMore) {
+                // TODO loadNextPage()
+            }
+        }
+    }
+
 }
 
 
@@ -219,5 +334,21 @@ fun ItemIndexedMoviePreview() {
 fun StickyHeaderMoviePreview() {
     ScaffoldTheme {
         GroupedMovieList(movies2)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatPreview() {
+    ScaffoldTheme {
+        ChatScreen(chatData)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatPagingPreview() {
+    ScaffoldTheme {
+        ChatPagingList(chatData)
     }
 }
